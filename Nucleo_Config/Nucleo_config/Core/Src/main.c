@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "mdbus_master/mdbus_master.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -56,6 +57,20 @@ static void MX_USART2_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void mdbus_send_packet(uint8_t *data)
+{
+	HAL_UART_Transmit(&huart2, data, 12, 100);
+	HAL_Delay(1000);
+}
+
+void mdbus_read_packet(uint8_t *data)
+{
+	HAL_UART_Receive (&huart2, data, 12, 5000);
+	HAL_Delay(1000);
+}
+
+uint8_t UART1_rxBuffer[12] = {0};
+
 /* USER CODE END 0 */
 
 /**
@@ -89,6 +104,8 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  //mdbus_master_configure();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -98,14 +115,22 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  uint8_t Test[] = "Hello World \r\n";
-	  HAL_UART_Transmit(&huart2,Test,sizeof(Test),10);
-	  HAL_Delay(2000);
+//	  uint8_t Test[50] = "";
+//	  sprintf(Test, ": %u \n", 233);
+//	  HAL_UART_Transmit(&huart2, Test, sizeof(Test), 100);
+//	  HAL_Delay(2000);
 
+//	  HAL_UART_Receive (&huart2, UART1_rxBuffer, 12, 5000);
+//	  HAL_UART_Transmit(&huart2, UART1_rxBuffer, 12, 100);
+
+//	  mdbus_read_packet(UART1_rxBuffer);
+//	  mdbus_send_packet(UART1_rxBuffer);
+
+	  mdbus_master_run();
 
 	  /* Dioda LD4 */
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	  HAL_Delay (2000);
+	  //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  //HAL_Delay (1000);
   }
   /* USER CODE END 3 */
 }
