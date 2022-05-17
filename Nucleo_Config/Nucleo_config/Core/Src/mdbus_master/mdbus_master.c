@@ -61,21 +61,19 @@ void mdbus_master_configure()
 
 void idle()
 {
-	  uint8_t Test[50] = "";
-	  sprintf(Test, ": %u \n", 5000);
-	  mdbus_send_packet(Test);
-	  mdbus_state = EMISSION_START;
+	uint8_t Test[50] = "";
+	sprintf(Test, ": %u \n", 5000);
+	mdbus_send_packet(Test);
+	mdbus_state = EMISSION_START;
 }
 
 void emision_start()
 {
-//	uint8_t Test[50] = "";
-//	sprintf(Test, ": %u \n", 123131);
-//	mdbus_send_packet(Test);
-
 	uint8_t data[PACKETSIZE] = {0};
 	mdbus_read_packet(data);
+	mdbus_send_packet("\n");
 	mdbus_send_packet(data);
+	mdbus_send_packet("\n");
 }
 
 void emision()
