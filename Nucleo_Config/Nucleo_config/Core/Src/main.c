@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "mdbus_master/mdbus_master.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -40,8 +39,9 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- UART_HandleTypeDef huart2;
-
+TIM_HandleTypeDef htim2;
+UART_HandleTypeDef huart2;
+uint8_t Received[10];
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -50,6 +50,7 @@
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -57,16 +58,40 @@ static void MX_USART2_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void mdbus_send_packet(uint8_t *data)
+void mdbus_send_packet(uint8_t *data, uint16_t size)
 {
-	HAL_UART_Transmit(&huart2, data, 12, 100);
-	HAL_Delay(10);
+	HAL_UART_Transmit(&huart2, data, size, 1000);
+	HAL_Delay(100);
 }
 
-void mdbus_read_packet(uint8_t *data)
+void mdbus_read_packet(uint8_t *data, uint16_t size)
 {
-	HAL_UART_Receive (&huart2, data, 12, 5000);
-	HAL_Delay(10);
+	HAL_UART_Receive(&huart2, data, size, 1000);
+	HAL_Delay(100);
+}
+
+/* USER CODE BEGIN PFP */
+/* Private function prototypes -----------------------------------------------*/
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	static uint16_t cnt = 0;
+	uint8_t data[50];
+	uint16_t size = 0;
+	++cnt;
+
+	//size = sprintf(data, "Liczba wyslanych wiadomosci: %d.\n\r", cnt);
+	HAL_UART_Transmit_IT(&huart2, data, size);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	uint8_t Data[40]; // Tablica przechowujaca wysylana wiadomosc.
+	uint16_t size = 0; // Rozmiar wysylanej wiadomosci
+
+	size = sprintf(Data, "Odebrana wiadomosc: %s\n\r",Received);
+
+	HAL_UART_Transmit_IT(&huart2, Data, size); // Rozpoczecie nadawania danych z wykorzystaniem przerwan
+	HAL_UART_Receive_IT(&huart2, Received, 10); // Ponowne włączenie nasłuchiwania
 }
 
 /* USER CODE END 0 */
@@ -99,10 +124,17 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  //stat listening sanding callback
   MX_USART2_UART_Init();
+  //start timer
+  MX_TIM2_Init();
+  //start listening receiving callback
+  HAL_UART_Receive_IT(&huart2, &Received, 10);
   /* USER CODE BEGIN 2 */
 
-  //mdbus_master_configure();
+  HAL_TIM_Base_Start_IT(&htim2);
+
+  mdbus_slave_configure();
 
   /* USER CODE END 2 */
 
@@ -113,7 +145,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  mdbus_master_run();
+	  mdbus_slave_run();
   }
   /* USER CODE END 3 */
 }
@@ -138,7 +170,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
+  RCC_OscInitStruct.PLL.PLLN = 8;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -148,14 +186,59 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 1000;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 36000;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
 }
 
 /**

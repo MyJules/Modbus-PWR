@@ -12,7 +12,6 @@ RM := rm -rf
 -include Drivers/STM32G0xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/mdbus_slave/subdir.mk
--include Core/Src/mdbus_master/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
 

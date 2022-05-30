@@ -1,0 +1,10 @@
+../Core/Src/mdbus_slave/mdbus_slave.c:17:6:mdbus_slave_run	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:45:6:mdbus_make_packet	24	static
+../Core/Src/mdbus_slave/mdbus_slave.c:59:6:mdbus_slave_configure	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:64:6:idle	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:68:6:emision_start	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:72:6:emision	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:76:6:emision_end	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:80:6:reception	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:84:6:wait_end_of_frame	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:88:6:bad_mdbus_state	8	static
