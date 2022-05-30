@@ -48,7 +48,10 @@ void mdbus_make_packet(mdbus_Packet *packet,
 void mdbus_slave_run();
 
 //need to define how to send and receive packages
-void mdbus_send_packet(uint8_t *data, uint16_t size);
-void mdbus_read_packet(uint8_t *data, uint16_t size);
+void mdbus_send_packet_it(uint8_t *data, uint16_t size);
+void mdbus_read_packet_it(uint8_t *data, uint16_t size);
+//
+void mdbus_on_packet_send();
+void mdbus_on_packet_receive(uint8_t *data, uint16_t size);
 
 #endif /* SRC_MDBUS_SLAVE_MDBUS_SLAVE_H_ */

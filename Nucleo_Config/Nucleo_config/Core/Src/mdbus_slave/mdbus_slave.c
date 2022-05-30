@@ -14,6 +14,28 @@ uint32_t timeout;
 mdbus_Packet* currentPacket;
 mdbus_State mdbus_state = IDLE;
 
+void mdbus_on_packet_send()
+{
+	static uint16_t cnt = 0;
+	uint8_t Data[50];
+	uint16_t size = 0;
+	++cnt;
+
+	size = sprintf(Data, "Liczba wyslanych wiadomosci: %d.\n\r", cnt);
+	//mdbus_send_packet_it(Data, size);
+}
+
+void mdbus_on_packet_receive(uint8_t *data, uint16_t size)
+{
+	uint8_t Data[PACKETSIZE+100];
+	uint16_t size1 = 0;
+
+	size1 = sprintf(Data, "Odebrana wiadomosc: %s\n\r", data);
+
+	mdbus_send_packet_it(Data, size1);
+	mdbus_read_packet_it(data, size);
+}
+
 void mdbus_slave_run()
 {
 	switch(mdbus_state)

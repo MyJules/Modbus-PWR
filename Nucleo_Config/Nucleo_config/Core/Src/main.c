@@ -21,6 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
+#include "mdbus_slave/mdbus_slave.h"
 
 /* USER CODE END Includes */
 
@@ -41,7 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
-uint8_t Received[10];
+volatile uint8_t Received[PACKETSIZE];
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -58,40 +61,29 @@ static void MX_TIM2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void mdbus_send_packet(uint8_t *data, uint16_t size)
+void mdbus_send_packet_it(uint8_t *data, uint16_t size)
 {
-	HAL_UART_Transmit(&huart2, data, size, 1000);
-	HAL_Delay(100);
+	HAL_UART_Transmit_IT(&huart2, data, size);
 }
 
-void mdbus_read_packet(uint8_t *data, uint16_t size)
+void mdbus_read_packet_it(uint8_t *data, uint16_t size)
 {
-	HAL_UART_Receive(&huart2, data, size, 1000);
-	HAL_Delay(100);
+	HAL_UART_Receive_IT(&huart2, data, PACKETSIZE);
 }
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
+
+//send callback
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	static uint16_t cnt = 0;
-	uint8_t data[50];
-	uint16_t size = 0;
-	++cnt;
-
-	//size = sprintf(data, "Liczba wyslanych wiadomosci: %d.\n\r", cnt);
-	HAL_UART_Transmit_IT(&huart2, data, size);
+	mdbus_on_packet_send();
 }
 
+//receive callback
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	uint8_t Data[40]; // Tablica przechowujaca wysylana wiadomosc.
-	uint16_t size = 0; // Rozmiar wysylanej wiadomosci
-
-	size = sprintf(Data, "Odebrana wiadomosc: %s\n\r",Received);
-
-	HAL_UART_Transmit_IT(&huart2, Data, size); // Rozpoczecie nadawania danych z wykorzystaniem przerwan
-	HAL_UART_Receive_IT(&huart2, Received, 10); // Ponowne włączenie nasłuchiwania
+	mdbus_on_packet_receive(Received, PACKETSIZE);
 }
 
 /* USER CODE END 0 */
@@ -129,7 +121,7 @@ int main(void)
   //start timer
   MX_TIM2_Init();
   //start listening receiving callback
-  HAL_UART_Receive_IT(&huart2, &Received, 10);
+  HAL_UART_Receive_IT(&huart2, &Received, PACKETSIZE);
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start_IT(&htim2);
