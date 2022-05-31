@@ -68,7 +68,7 @@ void mdbus_send_packet_it(uint8_t *data, uint16_t size)
 
 void mdbus_read_packet_it(uint8_t *data, uint16_t size)
 {
-	HAL_UART_Receive_IT(&huart2, data, PACKETSIZE);
+	HAL_UART_Receive_IT(&huart2, data, size);
 }
 
 /* USER CODE BEGIN PFP */
@@ -127,7 +127,6 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2);
 
   mdbus_slave_configure();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */

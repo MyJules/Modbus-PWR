@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define PACKETSIZE 64
+#define PACKETSIZE 10
 
 typedef enum
 {
