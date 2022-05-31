@@ -43,7 +43,7 @@
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
-volatile uint8_t Received[PACKETSIZE];
+volatile uint8_t receivedData[PACKETSIZE];
 
 /* USER CODE BEGIN PV */
 
@@ -83,7 +83,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //receive callback
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	mdbus_on_packet_receive(Received, PACKETSIZE);
+	mdbus_on_packet_receive(receivedData, PACKETSIZE);
 }
 
 /* USER CODE END 0 */
@@ -121,7 +121,7 @@ int main(void)
   //start timer
   MX_TIM2_Init();
   //start listening receiving callback
-  HAL_UART_Receive_IT(&huart2, &Received, PACKETSIZE);
+  HAL_UART_Receive_IT(&huart2, &receivedData, PACKETSIZE);
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start_IT(&htim2);

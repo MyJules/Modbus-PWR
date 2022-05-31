@@ -13,7 +13,6 @@ typedef enum
 	EMISSION_END,
 	RECEPTION,
 	WAIT_END_OF_FRAME
-
 }mdbus_State;
 
 typedef struct

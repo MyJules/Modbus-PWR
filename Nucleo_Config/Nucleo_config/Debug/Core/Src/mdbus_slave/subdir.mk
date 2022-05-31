@@ -5,12 +5,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/mdbus_slave/circular_buffer.c \
 ../Core/Src/mdbus_slave/mdbus_slave.c 
 
 OBJS += \
+./Core/Src/mdbus_slave/circular_buffer.o \
 ./Core/Src/mdbus_slave/mdbus_slave.o 
 
 C_DEPS += \
+./Core/Src/mdbus_slave/circular_buffer.d \
 ./Core/Src/mdbus_slave/mdbus_slave.d 
 
 
@@ -21,7 +24,7 @@ Core/Src/mdbus_slave/%.o Core/Src/mdbus_slave/%.su: ../Core/Src/mdbus_slave/%.c 
 clean: clean-Core-2f-Src-2f-mdbus_slave
 
 clean-Core-2f-Src-2f-mdbus_slave:
-	-$(RM) ./Core/Src/mdbus_slave/mdbus_slave.d ./Core/Src/mdbus_slave/mdbus_slave.o ./Core/Src/mdbus_slave/mdbus_slave.su
+	-$(RM) ./Core/Src/mdbus_slave/circular_buffer.d ./Core/Src/mdbus_slave/circular_buffer.o ./Core/Src/mdbus_slave/circular_buffer.su ./Core/Src/mdbus_slave/mdbus_slave.d ./Core/Src/mdbus_slave/mdbus_slave.o ./Core/Src/mdbus_slave/mdbus_slave.su
 
 .PHONY: clean-Core-2f-Src-2f-mdbus_slave
 

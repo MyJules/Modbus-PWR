@@ -1,0 +1,9 @@
+../Core/Src/mdbus_slave/circular_buffer.h:103:16:ring_buffer_is_empty	16	static
+../Core/Src/mdbus_slave/circular_buffer.h:112:16:ring_buffer_is_full	16	static
+../Core/Src/mdbus_slave/circular_buffer.h:121:27:ring_buffer_num_items	16	static
+../Core/Src/mdbus_slave/circular_buffer.c:7:6:ring_buffer_init	16	static
+../Core/Src/mdbus_slave/circular_buffer.c:12:6:ring_buffer_queue	16	static
+../Core/Src/mdbus_slave/circular_buffer.c:25:6:ring_buffer_queue_arr	40	static
+../Core/Src/mdbus_slave/circular_buffer.c:33:9:ring_buffer_dequeue	16	static
+../Core/Src/mdbus_slave/circular_buffer.c:44:20:ring_buffer_dequeue_arr	32	static
+../Core/Src/mdbus_slave/circular_buffer.c:59:9:ring_buffer_peek	32	static
