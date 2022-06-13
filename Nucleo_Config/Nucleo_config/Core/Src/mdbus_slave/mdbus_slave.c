@@ -33,7 +33,7 @@ bool isEof();
 ring_buffer_t m_message_queue_send;
 ring_buffer_t m_message_queue_receive;
 mdbus_State m_mdbus_state = IDLE;
-uint8_t m_adress = '0';
+uint8_t m_slave = '0';
 
 void mdbus_on_packet_send()
 {
@@ -103,7 +103,7 @@ void mdbus_slave_configure(uint8_t adress)
 	m_mdbus_state = IDLE;
 	ring_buffer_init(&m_message_queue_send);
 	ring_buffer_init(&m_message_queue_receive);
-	m_adress = adress;
+	m_slave = adress;
 }
 
 void idle()
@@ -114,7 +114,7 @@ void idle()
 	ring_buffer_dequeue_arr(&m_message_queue_receive, data, PACKETSIZE);
 
 	//if the first bite is the adress of our mashine, if not, wait for end of package
-	if(m_adress == data[0])
+	if(m_slave == data[0])
 	{
 		m_mdbus_state = FUNC_ADRESS;
 	}else
@@ -126,33 +126,42 @@ void idle()
 
 void wait()
 {
-	uint8_t data[PACKETSIZE];
-	m_mdbus_state = IDLE;
-	*data = 'w';
-	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
+	if(isEof())
+	{
+		m_mdbus_state = IDLE;
+	}
 }
 
 void func_adress()
 {
+	//read function adress from input
+	if(ring_buffer_is_empty(&m_message_queue_receive)) return;
+
 	uint8_t data[PACKETSIZE];
-	m_mdbus_state = IDLE;
-	*data = 'f';
-	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
+	ring_buffer_dequeue_arr(&m_message_queue_receive, data, PACKETSIZE);
+
+	//when we have data select right funciton to do
+
 }
 
 void error_unknown()
 {
-
+	if(isEof())
+	{
+		m_mdbus_state = IDLE;
+	}
 }
 
 void ok()
 {
-
+	// wait for end of frame and go to idle state
+	if(isEof())	m_mdbus_state = IDLE;
 }
 
 void fail()
 {
-
+	// wait for end of frame and go to idle state
+	if(isEof())	m_mdbus_state = IDLE;
 }
 
 void check_frame()
@@ -162,12 +171,14 @@ void check_frame()
 
 void func1()
 {
-
+	//at the end check if frame is ok
+	m_mdbus_state = CHECK_FRAME;
 }
 
 void func2()
 {
-
+	//at the end check if frame is ok
+	m_mdbus_state = CHECK_FRAME;
 }
 
 bool isEof()
