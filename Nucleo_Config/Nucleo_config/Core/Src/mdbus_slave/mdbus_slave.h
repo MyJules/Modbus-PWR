@@ -7,7 +7,15 @@
 
 typedef enum
 {
-	IDLE = 0
+	IDLE = 0,
+	WAIT,
+	FUNC_ADRESS,
+	ERROR_UNKNOWN,
+	OK,
+	FAIL,
+	CHECK_FRAME,
+	FUNC1,
+	FUNC2
 }mdbus_State;
 
 

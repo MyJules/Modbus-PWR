@@ -4,12 +4,14 @@
 #include <string.h>
 
 void idle();
-void emision_start();
-void emision();
-void emision_end();
-void reception();
-void wait_end_of_frame();
-void bad_mdbus_state();
+void wait();
+void func_adress();
+void error_unknown();
+void ok();
+void fail();
+void check_frame();
+void func1();
+void func2();
 
 ring_buffer_t m_message_queue_send;
 ring_buffer_t m_message_queue_receive;
@@ -40,6 +42,38 @@ void mdbus_slave_run()
 	case IDLE:
 		idle();
 		break;
+
+	case WAIT:
+		wait();
+		break;
+
+	case FUNC_ADRESS:
+		func_adress();
+		break;
+
+	case ERROR_UNKNOWN:
+		error_unknown();
+		break;
+
+	case OK:
+		ok();
+		break;
+
+	case FAIL:
+		fail();
+		break;
+
+	case CHECK_FRAME:
+		check_frame();
+		break;
+
+	case FUNC1:
+		func1();
+		break;
+
+	case FUNC2:
+		func2();
+		break;
 	default:
 		break;
 	}
@@ -59,5 +93,45 @@ void idle()
 	uint8_t data[PACKETSIZE];
 	ring_buffer_dequeue_arr(&m_message_queue_receive, data, PACKETSIZE);
 	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
+}
+
+void wait()
+{
+
+}
+
+void func_adress()
+{
+
+}
+
+void error_unknown()
+{
+
+}
+
+void ok()
+{
+
+}
+
+void fail()
+{
+
+}
+
+void check_frame()
+{
+
+}
+
+void func1()
+{
+
+}
+
+void func2()
+{
+
 }
 
