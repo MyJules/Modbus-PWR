@@ -5,21 +5,7 @@
 
 #define PACKETSIZE 1
 
-typedef enum
-{
-	IDLE = 0,
-	WAIT,
-	FUNC_ADRESS,
-	ERROR_UNKNOWN,
-	OK,
-	FAIL,
-	CHECK_FRAME,
-	FUNC1,
-	FUNC2
-}mdbus_State;
-
-
-void mdbus_slave_configure();
+void mdbus_slave_configure(uint8_t adress);
 void mdbus_slave_run();
 
 //need to define how to send and receive packages

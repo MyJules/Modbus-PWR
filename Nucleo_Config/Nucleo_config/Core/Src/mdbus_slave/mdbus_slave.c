@@ -1,7 +1,22 @@
 #include "mdbus_slave.h"
 
 #include "circular_buffer.h"
+
 #include <string.h>
+#include <stdbool.h>
+
+typedef enum
+{
+	IDLE = 0,
+	WAIT,
+	FUNC_ADRESS,
+	ERROR_UNKNOWN,
+	OK,
+	FAIL,
+	CHECK_FRAME,
+	FUNC1,
+	FUNC2
+} mdbus_State;
 
 void idle();
 void wait();
@@ -13,9 +28,12 @@ void check_frame();
 void func1();
 void func2();
 
+bool isEof();
+
 ring_buffer_t m_message_queue_send;
 ring_buffer_t m_message_queue_receive;
 mdbus_State m_mdbus_state = IDLE;
+uint8_t m_adress = '0';
 
 void mdbus_on_packet_send()
 {
@@ -74,16 +92,18 @@ void mdbus_slave_run()
 	case FUNC2:
 		func2();
 		break;
+
 	default:
 		break;
 	}
 }
 
-void mdbus_slave_configure()
+void mdbus_slave_configure(uint8_t adress)
 {
 	m_mdbus_state = IDLE;
 	ring_buffer_init(&m_message_queue_send);
 	ring_buffer_init(&m_message_queue_receive);
+	m_adress = adress;
 }
 
 void idle()
@@ -92,17 +112,32 @@ void idle()
 
 	uint8_t data[PACKETSIZE];
 	ring_buffer_dequeue_arr(&m_message_queue_receive, data, PACKETSIZE);
-	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
+
+	//if the first bite is the adress of our mashine, if not, wait for end of package
+	if(m_adress == data[0])
+	{
+		m_mdbus_state = FUNC_ADRESS;
+	}else
+	{
+		m_mdbus_state = WAIT;
+	}
+
 }
 
 void wait()
 {
-
+	uint8_t data[PACKETSIZE];
+	m_mdbus_state = IDLE;
+	*data = 'w';
+	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
 }
 
 void func_adress()
 {
-
+	uint8_t data[PACKETSIZE];
+	m_mdbus_state = IDLE;
+	*data = 'f';
+	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
 }
 
 void error_unknown()
@@ -133,5 +168,10 @@ void func1()
 void func2()
 {
 
+}
+
+bool isEof()
+{
+	return true;
 }
 
