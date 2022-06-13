@@ -1,12 +1,5 @@
-../Core/Src/mdbus_slave/mdbus_slave.c:17:6:mdbus_on_packet_send	24	static
+../Core/Src/mdbus_slave/mdbus_slave.c:17:6:mdbus_on_packet_send	16	static
 ../Core/Src/mdbus_slave/mdbus_slave.c:29:6:mdbus_on_packet_receive	16	static
 ../Core/Src/mdbus_slave/mdbus_slave.c:35:6:mdbus_slave_run	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:63:6:mdbus_make_packet	24	static
-../Core/Src/mdbus_slave/mdbus_slave.c:77:6:mdbus_slave_configure	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:83:6:idle	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:87:6:emision_start	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:91:6:emision	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:95:6:emision_end	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:99:6:reception	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:103:6:wait_end_of_frame	8	static
-../Core/Src/mdbus_slave/mdbus_slave.c:107:6:bad_mdbus_state	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:47:6:mdbus_slave_configure	8	static
+../Core/Src/mdbus_slave/mdbus_slave.c:53:6:idle	8	static

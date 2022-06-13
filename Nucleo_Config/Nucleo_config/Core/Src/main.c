@@ -121,7 +121,7 @@ int main(void)
   //start timer
   MX_TIM2_Init();
   //start listening receiving callback
-  HAL_UART_Receive_IT(&huart2, &receivedData, PACKETSIZE);
+  mdbus_read_packet_it(&receivedData, PACKETSIZE);
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start_IT(&htim2);
