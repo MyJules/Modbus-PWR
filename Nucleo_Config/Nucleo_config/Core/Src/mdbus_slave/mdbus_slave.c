@@ -126,6 +126,9 @@ void idle()
 
 void wait()
 {
+	uint8_t data[PACKETSIZE];
+	*data = 'w';
+	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
 	if(isEof())
 	{
 		m_mdbus_state = IDLE;
@@ -142,6 +145,12 @@ void func_adress()
 
 	//when we have data select right funciton to do
 
+	uint8_t data1[PACKETSIZE];
+	*data1 = 'f';
+	ring_buffer_queue_arr(&m_message_queue_send, data1, PACKETSIZE);
+
+	m_mdbus_state = IDLE;
+
 }
 
 void error_unknown()
@@ -150,12 +159,20 @@ void error_unknown()
 	{
 		m_mdbus_state = IDLE;
 	}
+
+	uint8_t data[PACKETSIZE];
+	*data = 'e';
+	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
 }
 
 void ok()
 {
 	// wait for end of frame and go to idle state
 	if(isEof())	m_mdbus_state = IDLE;
+
+	uint8_t data[PACKETSIZE];
+	*data = 'k';
+	ring_buffer_queue_arr(&m_message_queue_send, data, PACKETSIZE);
 }
 
 void fail()
